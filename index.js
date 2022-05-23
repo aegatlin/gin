@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { argv } from 'node:process';
 function gin() {
