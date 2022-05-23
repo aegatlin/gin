@@ -29,7 +29,7 @@ export default ${name}
     `interface ${name}Props {}
 
 export function ${name}(props: ${name}Props) {
-return <div>${name}</div>
+  return <div>${name}</div>
 }
 `
   )

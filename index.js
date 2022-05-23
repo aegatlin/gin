@@ -19,7 +19,7 @@ export default ${name}
     writeFileSync(`${name}/${name}.tsx`, `interface ${name}Props {}
 
 export function ${name}(props: ${name}Props) {
-return <div>${name}</div>
+  return <div>${name}</div>
 }
 `);
 }
