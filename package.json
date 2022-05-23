@@ -9,7 +9,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "ppp": "npm version patch && git push && npm publish"
   },
   "repository": {
     "type": "git",
