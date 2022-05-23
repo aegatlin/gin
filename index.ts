@@ -6,33 +6,33 @@ import { argv } from 'node:process'
 function gin() {
   const command = argv[2]
 
-  if (command && command == 'gin') {
-    const subcommand = argv[3]
+  if (command && command == 'barrel') {
+    const barrelName = argv[3]
 
-    if (subcommand && subcommand == 'barrel') {
-      const barrelName = argv[4]
-
-      if (barrelName) {
-        mkdirSync(barrelName)
-        writeFileSync(
-          `${barrelName}/index.ts`,
-          `import { ${barrelName} } from './${barrelName}'
-
-export default ${barrelName}
-`
-        )
-        writeFileSync(
-          `${barrelName}/${barrelName}.tsx`,
-          `interface ${barrelName}Props {}
-
-export function ${barrelName}(props: ${barrelName}Props) {
-  return <div>${barrelName}</div>
-}
-`
-        )
-      }
+    if (barrelName) {
+      buildBarrel(barrelName)
     }
   }
+}
+
+function buildBarrel(name: string) {
+  mkdirSync(name)
+  writeFileSync(
+    `${name}/index.ts`,
+    `import { ${name} } from './${name}'
+
+export default ${name}
+`
+  )
+  writeFileSync(
+    `${name}/${name}.tsx`,
+    `interface ${name}Props {}
+
+export function ${name}(props: ${name}Props) {
+return <div>${name}</div>
+}
+`
+  )
 }
 
 gin()
