@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { argv } from 'node:process';
+import { camelCase, pascalCase } from 'change-case';
 function gin() {
     const command = argv[2];
     if (command && command == 'barrel') {
@@ -10,17 +11,32 @@ function gin() {
         }
     }
 }
-function buildBarrel(name) {
-    mkdirSync(name);
-    writeFileSync(`${name}/index.ts`, `import { ${name} } from './${name}'
+const indexTsFile = (name) => {
+    const cName = pascalCase(name);
+    const fName = camelCase(name);
+    const content = `import { ${cName} } from './${fName}'
 
-export default ${name}
-`);
-    writeFileSync(`${name}/${name}.tsx`, `interface ${name}Props {}
+export default ${cName}
+`;
+    writeFileSync(`${fName}/index.ts`, content);
+};
+const componentTsxFile = (name) => {
+    const fName = camelCase(name);
+    const cName = pascalCase(name);
+    const pName = `${pascalCase(name)}Props`;
+    const content = `interface ${pName} {
+  
+}
 
-export function ${name}(props: ${name}Props) {
+export function ${cName}(props: ${pName}) {
   return <div>${name}</div>
 }
-`);
+`;
+    writeFileSync(`${fName}/${fName}.tsx`, content);
+};
+function buildBarrel(name) {
+    mkdirSync(camelCase(name));
+    indexTsFile(name);
+    componentTsxFile(name);
 }
 gin();

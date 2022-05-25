@@ -2,6 +2,7 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { argv } from 'node:process'
+import { camelCase, pascalCase } from 'change-case'
 
 function gin() {
   const command = argv[2]
@@ -15,24 +16,35 @@ function gin() {
   }
 }
 
-function buildBarrel(name: string) {
-  mkdirSync(name)
-  writeFileSync(
-    `${name}/index.ts`,
-    `import { ${name} } from './${name}'
+const indexTsFile = (name: string) => {
+  const cName = pascalCase(name)
+  const fName = camelCase(name)
+  const content = `import { ${cName} } from './${fName}'
 
-export default ${name}
+export default ${cName}
 `
-  )
-  writeFileSync(
-    `${name}/${name}.tsx`,
-    `interface ${name}Props {}
+  writeFileSync(`${fName}/index.ts`, content)
+}
 
-export function ${name}(props: ${name}Props) {
+const componentTsxFile = (name: string) => {
+  const fName = camelCase(name)
+  const cName = pascalCase(name)
+  const pName = `${pascalCase(name)}Props`
+  const content = `interface ${pName} {
+  
+}
+
+export function ${cName}(props: ${pName}) {
   return <div>${name}</div>
 }
 `
-  )
+  writeFileSync(`${fName}/${fName}.tsx`, content)
+}
+
+function buildBarrel(name: string) {
+  mkdirSync(camelCase(name))
+  indexTsFile(name)
+  componentTsxFile(name)
 }
 
 gin()
