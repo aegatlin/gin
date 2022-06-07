@@ -1,6 +1,6 @@
 import { camelCase, pascalCase } from 'change-case'
-import { mkfile, sEnum, sInterface } from './helpers'
-import { GinSpec, KV } from './types'
+import { mkfile, sEnum, sImports, sInterface } from './helpers'
+import { GinSpec, Import, KV } from './types'
 
 export function createIndexFile(g: GinSpec, dirname: string) {
   const indexContent = makeIndexFileContent(g)
@@ -8,14 +8,16 @@ export function createIndexFile(g: GinSpec, dirname: string) {
 }
 
 function makeIndexFileContent(g: GinSpec): string {
-  let content = `import { builder } from './${camelCase(g.name)}'\n`
-  content += '\n'
-  content += sProps(g)
-  content += '\n'
-  content += sMetaProps(g)
-  content += '\n'
-  content += sBarrelComponent(g)
-  return content
+  const imports: Import[] = g.metaProps
+    ? [[camelCase(g.name), ['builder']]]
+    : [[camelCase(g.name), Object.keys(g.variants)]]
+  const exprt = `export default ${pascalCase(g.name)}`
+
+  return (
+    [sImports(imports), sProps(g), sMetaProps(g), sBarrelComponent(g), exprt]
+      .filter((x) => !!x)
+      .join('\n\n') + '\n'
+  )
 }
 
 function sProps(g: GinSpec): string {
@@ -25,10 +27,12 @@ function sProps(g: GinSpec): string {
       Object.entries(props),
     ])
     .map(([name, entries]) => sInterface(name, entries))
-    .join('\n')
+    .join('\n\n')
 }
 
 function sMetaProps(g: GinSpec): string {
+  if (!g.metaProps) return
+
   const enums = Object.entries(g.metaProps)
     .map(([name, values]) => sEnum(name, values))
     .join('\n')
@@ -40,16 +44,15 @@ function sMetaProps(g: GinSpec): string {
   ])
   const iface = sInterface(name, entries)
 
-  return enums + '\n' + iface
+  return enums + '\n\n' + iface
 }
 
-function sBarrelComponent(g: GinSpec) {
+function sBarrelComponent(g: GinSpec): string {
   const name = pascalCase(g.name)
-  return [
-    `const ${name} = {`,
-    ...Object.entries(g.variants).map(([vName, { props, metaProps }]) => {
-      if (!metaProps) return `  ${vName}: (props: ${props}) => builder(props),`
-      else {
+  if (g.metaProps) {
+    return [
+      `const ${name} = {`,
+      ...Object.entries(g.variants).map(([vName, { props, metaProps }]) => {
         const metaPropsKeyName = camelCase(metaProps)
         const subvariants = g.metaProps[metaProps]
         return [
@@ -60,9 +63,14 @@ function sBarrelComponent(g: GinSpec) {
           ),
           '  },',
         ].join('\n')
-      }
-    }),
-    '}\n',
-    `export default ${name}`,
-  ].join('\n')
+      }),
+      '}',
+    ].join('\n')
+  } else {
+    return [
+      `const ${name} = {`,
+      ...Object.keys(g.variants).map((v) => `  ${v},`),
+      `}`,
+    ].join('\n')
+  }
 }

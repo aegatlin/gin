@@ -564,13 +564,13 @@ var require_dist3 = __commonJS({
       return input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
     }
     exports.pascalCaseTransformMerge = pascalCaseTransformMerge;
-    function pascalCase2(input, options) {
+    function pascalCase4(input, options) {
       if (options === void 0) {
         options = {};
       }
       return no_case_1.noCase(input, tslib_1.__assign({ delimiter: "", transform: pascalCaseTransform }, options));
     }
-    exports.pascalCase = pascalCase2;
+    exports.pascalCase = pascalCase4;
   }
 });
 
@@ -878,17 +878,21 @@ function sInterface(name, entries, { shouldExport = true } = { shouldExport: tru
   return [
     `${shouldExport && "export "}interface ${name} {`,
     ...entries.map(([key, value]) => `  ${key}: ${value}`),
-    `}
-`
-  ].join("\n");
+    `}`
+  ].join(entries.length > 0 ? "\n" : "");
 }
 function sEnum(name, entries, { shouldExport = true } = { shouldExport: true }) {
   return [
     `${shouldExport && "export "}enum ${name} {`,
     ...entries.map((v) => `  ${v},`),
-    `}
-`
+    `}`
   ].join("\n");
+}
+function sImports(imports) {
+  return imports.map((i) => sImport(i)).join("\n");
+}
+function sImport([file, objects]) {
+  return `import { ${objects.join(", ")} } from './${file}'`;
 }
 function mkdir(name) {
   const dirname = (0, import_change_case.camelCase)(name);
@@ -896,17 +900,65 @@ function mkdir(name) {
     (0, import_node_fs.mkdirSync)(dirname);
   return dirname;
 }
-function mkfile(dirname, filename, ext, content) {
+function mkfile(dirname, filename, ext, content2) {
   const dir = (0, import_change_case.camelCase)(dirname);
   if (!(0, import_node_fs.existsSync)(dir))
     (0, import_node_fs.mkdirSync)(dirname);
-  (0, import_node_fs.writeFileSync)(`${dir}/${(0, import_change_case.camelCase)(filename)}.${ext}`, content);
+  (0, import_node_fs.writeFileSync)(`${dir}/${(0, import_change_case.camelCase)(filename)}.${ext}`, content2);
+}
+function sReactComponent(name, params, opts = { shouldExport: true }) {
+  return sFunction(name, params, `return <div>${name}</div>`, opts);
+}
+function sFunction(name, params, content2, { shouldExport }) {
+  const sParams = params.map(([n, t]) => `${n}: ${t}`).join(", ");
+  return [
+    `${shouldExport ? "export " : ""}function ${name}(${sParams}) {`,
+    indent(content2),
+    `}`
+  ].join("\n");
+}
+function sSwitchCase(switchOn, cases) {
+  return [
+    `switch (${switchOn}) {`,
+    cases.map(([name, content2]) => `  case (${name}): {
+  ${content2}
+}`).join("\n"),
+    `}`
+  ].join("\n");
+}
+function indent(content2) {
+  return content2.split("\n").map((c) => `  ${c}`).join("\n");
 }
 
 // src/componentFile.ts
 var import_change_case2 = __toESM(require_dist15());
 function createComponentFile(g, dirname) {
-  mkfile(dirname, (0, import_change_case2.camelCase)(g.name), "tsx", "");
+  mkfile(dirname, (0, import_change_case2.camelCase)(g.name), "tsx", content(g));
+}
+function content(g) {
+  if (g.metaProps) {
+    const imports = sImports([
+      ["index", [...Object.keys(g.props), "MetaProps"]]
+    ]);
+    return [imports, sBuilder(g)].join("\n\n");
+  } else {
+    const imports = sImports([
+      ["index", [...Object.keys(g.props)]]
+    ]);
+    return [imports, sVariants(g)].join("\n\n");
+  }
+}
+function sVariants(g) {
+  return Object.entries(g.variants).map(([variantName, variantThings]) => sReactComponent((0, import_change_case2.pascalCase)(variantName), [["props", variantThings.props]])).join("\n");
+}
+function sBuilder(g) {
+  const propInterfaces = Object.keys(g.props);
+  const params = [
+    ["props", `${propInterfaces.join(" | ")}`],
+    ["metaProps", "MetaProps"]
+  ];
+  const builderContent = sSwitchCase("metaProps.type", [["One", "hey"]]);
+  return sFunction("builder", params, "", { shouldExport: true });
 }
 
 // src/indexFile.ts
@@ -916,23 +968,19 @@ function createIndexFile(g, dirname) {
   mkfile(dirname, "index", "ts", indexContent);
 }
 function makeIndexFileContent(g) {
-  let content = `import { builder } from './${(0, import_change_case3.camelCase)(g.name)}'
-`;
-  content += "\n";
-  content += sProps(g);
-  content += "\n";
-  content += sMetaProps(g);
-  content += "\n";
-  content += sBarrelComponent(g);
-  return content;
+  const imports = g.metaProps ? [[(0, import_change_case3.camelCase)(g.name), ["builder"]]] : [[(0, import_change_case3.camelCase)(g.name), Object.keys(g.variants)]];
+  const exprt = `export default ${(0, import_change_case3.pascalCase)(g.name)}`;
+  return [sImports(imports), sProps(g), sMetaProps(g), sBarrelComponent(g), exprt].filter((x) => !!x).join("\n\n") + "\n";
 }
 function sProps(g) {
   return Object.entries(g.props).map(([name, props]) => [
     name,
     Object.entries(props)
-  ]).map(([name, entries]) => sInterface(name, entries)).join("\n");
+  ]).map(([name, entries]) => sInterface(name, entries)).join("\n\n");
 }
 function sMetaProps(g) {
+  if (!g.metaProps)
+    return;
   const enums = Object.entries(g.metaProps).map(([name2, values]) => sEnum(name2, values)).join("\n");
   const name = "MetaProps";
   const entries = Object.keys(g.metaProps).map((k) => [
@@ -940,16 +988,14 @@ function sMetaProps(g) {
     (0, import_change_case3.pascalCase)(k)
   ]);
   const iface = sInterface(name, entries);
-  return enums + "\n" + iface;
+  return enums + "\n\n" + iface;
 }
 function sBarrelComponent(g) {
   const name = (0, import_change_case3.pascalCase)(g.name);
-  return [
-    `const ${name} = {`,
-    ...Object.entries(g.variants).map(([vName, { props, metaProps }]) => {
-      if (!metaProps)
-        return `  ${vName}: (props: ${props}) => builder(props),`;
-      else {
+  if (g.metaProps) {
+    return [
+      `const ${name} = {`,
+      ...Object.entries(g.variants).map(([vName, { props, metaProps }]) => {
         const metaPropsKeyName = (0, import_change_case3.camelCase)(metaProps);
         const subvariants = g.metaProps[metaProps];
         return [
@@ -957,19 +1003,48 @@ function sBarrelComponent(g) {
           ...subvariants.map((subv) => `    ${subv}: (props: ${props}) => builder(props, { ${metaPropsKeyName}: ${metaProps}.${subv} }),`),
           "  },"
         ].join("\n");
+      }),
+      "}"
+    ].join("\n");
+  } else {
+    return [
+      `const ${name} = {`,
+      ...Object.keys(g.variants).map((v) => `  ${v},`),
+      `}`
+    ].join("\n");
+  }
+}
+
+// src/ginspecs/ginspec.ts
+var import_change_case4 = __toESM(require_dist15());
+function ginSpecMaker(name) {
+  const propsName = `${(0, import_change_case4.pascalCase)(name)}Props`;
+  return {
+    name,
+    props: {
+      [propsName]: {}
+    },
+    variants: {
+      Main: {
+        props: `${propsName}`
       }
-    }),
-    "}\n",
-    `export default ${name}`
-  ].join("\n");
+    }
+  };
 }
 
 // src/gin.ts
 function gin(command2, commandVal2) {
   if (command2 == "barrel") {
     const barrelName = commandVal2;
-    if (barrelName)
-      buildBarrel(avatar);
+    const isGinSpec = (name) => name.includes(".gin.");
+    if (barrelName) {
+      if (isGinSpec(barrelName)) {
+        buildBarrel(avatar);
+      } else {
+        const g = ginSpecMaker(barrelName);
+        buildBarrel(g);
+      }
+    }
   }
 }
 function buildBarrel(g) {

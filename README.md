@@ -95,3 +95,11 @@ const Avatar = {
   }
 }
 ```
+
+## Notes
+
+It _feels_ like all web apps do the same thing. Get data from data-source. Manipulate data. Display data. Sometimes the data needs to be aggregates, but if that lives in data-source, you have made it data, and so go back to fmd (fetch-manipulate-display). Of course, once you manipulate the data you can save that to the DS and so you can reduce this fully to fd (fetch-display). If you DS is a system, a black box, then it really does feel like fd is the end-game.
+
+So if you have a component in control of display, you need a thing in control of fetch. Enter hooks. What it fetches from is probably a frontend facade like useApi.
+
+So, QuestionItem uses useQuestion which uses useApi which calls an API object that is a wrapper around a fetch that hits the REST backend.

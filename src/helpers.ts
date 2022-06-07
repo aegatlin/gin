@@ -1,6 +1,6 @@
 import { camelCase } from 'change-case'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
-import { KV } from './types'
+import { Import, KV, Param } from './types'
 
 interface Opts {
   shouldExport?: boolean
@@ -14,8 +14,8 @@ export function sInterface(
   return [
     `${shouldExport && 'export '}interface ${name} {`,
     ...entries.map(([key, value]) => `  ${key}: ${value}`),
-    `}\n`,
-  ].join('\n')
+    `}`,
+  ].join(entries.length > 0 ? '\n' : '')
 }
 
 export function sEnum(
@@ -26,8 +26,16 @@ export function sEnum(
   return [
     `${shouldExport && 'export '}enum ${name} {`,
     ...entries.map((v) => `  ${v},`),
-    `}\n`,
+    `}`,
   ].join('\n')
+}
+
+export function sImports(imports: Import[]): string {
+  return imports.map((i) => sImport(i)).join('\n')
+}
+
+function sImport([file, objects]): string {
+  return `import { ${objects.join(', ')} } from './${file}'`
 }
 
 export function mkdir(name: string): string {
@@ -45,4 +53,41 @@ export function mkfile(
   const dir = camelCase(dirname)
   if (!existsSync(dir)) mkdirSync(dirname)
   writeFileSync(`${dir}/${camelCase(filename)}.${ext}`, content)
+}
+
+export function sReactComponent(
+  name: string,
+  params: Param[],
+  opts: Opts = { shouldExport: true }
+): string {
+  return sFunction(name, params, `return <div>${name}</div>`, opts)
+}
+
+export function sFunction(
+  name: string,
+  params: Param[],
+  content: string,
+  { shouldExport }: Opts
+) {
+  const sParams = params.map(([n, t]) => `${n}: ${t}`).join(', ')
+  return [
+    `${shouldExport ? 'export ' : ''}function ${name}(${sParams}) {`,
+    indent(content),
+    `}`,
+  ].join('\n')
+}
+
+export function sSwitchCase(switchOn: string, cases: [string, string][]): string {
+  return [
+    `switch (${switchOn}) {`,
+    cases.map(([name, content]) => `  case (${name}): {\n  ${content}\n}`).join('\n'),
+    `}`,
+  ].join('\n')
+}
+
+function indent(content: string): string {
+  return content
+    .split('\n')
+    .map((c) => `  ${c}`)
+    .join('\n')
 }
