@@ -1,7 +1,7 @@
 {
   "name": "@aegatlin/gin",
   "version": "0.0.8",
-  "bin": "dist/index.js",
+  "bin": "index.js",
   "prettier": {
     "semi": false,
     "singleQuote": true
