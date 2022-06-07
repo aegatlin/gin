@@ -1045,6 +1045,9 @@ function gin(command2, commandVal2) {
         buildBarrel(g);
       }
     }
+    console.log(`Generated Barrel: ${barrelName}`);
+  } else {
+    console.error(`Something went wrong. Command: ${command2}, CommandVal: ${commandVal2}`);
   }
 }
 function buildBarrel(g) {

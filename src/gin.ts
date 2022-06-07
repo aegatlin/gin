@@ -17,6 +17,9 @@ export function gin(command: string, commandVal: string) {
         buildBarrel(g)
       }
     }
+    console.log(`Generated Barrel: ${barrelName}`)
+  } else {
+    console.error(`Something went wrong. Command: ${command}, CommandVal: ${commandVal}`)
   }
 }
 
