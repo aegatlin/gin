@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 console.log('hello')
 // import { program } from 'commander'
 // import { exec } from 'node:child_process'
