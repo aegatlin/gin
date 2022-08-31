@@ -1,28 +1,28 @@
 #!/usr/bin/env node
-console.log('hello')
-// import { program } from 'commander'
-// import { exec } from 'node:child_process'
-// import { readFileSync, writeFileSync } from 'node:fs'
 
-// program.name('gin').description('A code generator')
+import { program } from 'commander'
+import { exec } from 'node:child_process'
+import { readFileSync, writeFileSync } from 'node:fs'
 
-// program
-//   .command('prettier')
-//   .description(
-//     'install prettier as a dev dependency and create .prettierrc file'
-//   )
-//   .action(() => {
-//     message('installing prettier')
-//     exec('npm i -D prettier')
+program.name('gin').description('A code generator')
 
-//     message('overwriting .prettierrc')
-//     const prettier = readFileSync('./reference/.prettierrc')
-//     writeFileSync('.prettierrc', prettier)
-//   })
+program
+  .command('prettier')
+  .description(
+    'install prettier as a dev dependency and create .prettierrc file'
+  )
+  .action(() => {
+    message('installing prettier')
+    exec('npm i -D prettier')
 
-// program.parse()
+    message('overwriting .prettierrc')
+    const prettier = readFileSync('./reference/.prettierrc')
+    writeFileSync('.prettierrc', prettier)
+  })
 
-// function message(msg) {
-//   console.log(`\ngin: ${msg}...`)
-// }
+program.parse()
+
+function message(msg) {
+  console.log(`\ngin: ${msg}...`)
+}
 
