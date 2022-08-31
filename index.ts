@@ -1,9 +1,25 @@
-#!/usr/bin/env node
+import { program } from 'commander'
+import { exec } from 'node:child_process'
+import { readFileSync, writeFileSync } from 'node:fs'
 
-import { argv } from 'node:process'
-import { gin } from './src/gin'
+program.name('gin').description('A code generator')
 
-const command = argv[2]
-const commandVal = argv[3]
+program
+  .command('prettier')
+  .description(
+    'install prettier as a dev dependency and create .prettierrc file'
+  )
+  .action(() => {
+    message('installing prettier')
+    exec('npm i -D prettier')
 
-gin(command, commandVal)
+    message('overwriting .prettierrc')
+    const prettier = readFileSync('./reference/.prettierrc')
+    writeFileSync('.prettierrc', prettier)
+  })
+
+program.parse()
+
+function message(msg) {
+  console.log(`\ngin: ${msg}...`)
+}
