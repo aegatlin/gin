@@ -2,7 +2,7 @@
 
 import { program } from 'commander'
 import { exec } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { writeFileSync } from 'node:fs'
 
 program.name('gin').description('A code generator')
 
@@ -12,12 +12,14 @@ program
     'install prettier as a dev dependency and create .prettierrc file'
   )
   .action(() => {
-    message('installing prettier')
+    message('installing prettier...')
     exec('npm i -D prettier')
 
-    message('overwriting .prettierrc')
-    const prettier = readFileSync('./reference/.prettierrc')
-    writeFileSync('.prettierrc', prettier)
+    message('overwriting .prettierrc...')
+    const prettier = JSON.stringify({ semi: false, singleQuote: true }, null, 2)
+    writeFileSync('.prettierrc', `${prettier}\n`)
+
+    message('process complete!')
   })
 
 program.parse()
@@ -25,4 +27,3 @@ program.parse()
 function message(msg) {
   console.log(`\ngin: ${msg}...`)
 }
-
