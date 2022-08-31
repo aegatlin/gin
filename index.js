@@ -1,25 +1,27 @@
-import { program } from 'commander'
-import { exec } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+console.log('hello')
+// import { program } from 'commander'
+// import { exec } from 'node:child_process'
+// import { readFileSync, writeFileSync } from 'node:fs'
 
-program.name('gin').description('A code generator')
+// program.name('gin').description('A code generator')
 
-program
-  .command('prettier')
-  .description(
-    'install prettier as a dev dependency and create .prettierrc file'
-  )
-  .action(() => {
-    message('installing prettier')
-    exec('npm i -D prettier')
+// program
+//   .command('prettier')
+//   .description(
+//     'install prettier as a dev dependency and create .prettierrc file'
+//   )
+//   .action(() => {
+//     message('installing prettier')
+//     exec('npm i -D prettier')
 
-    message('overwriting .prettierrc')
-    const prettier = readFileSync('./reference/.prettierrc')
-    writeFileSync('.prettierrc', prettier)
-  })
+//     message('overwriting .prettierrc')
+//     const prettier = readFileSync('./reference/.prettierrc')
+//     writeFileSync('.prettierrc', prettier)
+//   })
 
-program.parse()
+// program.parse()
 
-function message(msg) {
-  console.log(`\ngin: ${msg}...`)
-}
+// function message(msg) {
+//   console.log(`\ngin: ${msg}...`)
+// }
+
