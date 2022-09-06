@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { program } from 'commander'
-import { exec } from 'node:child_process'
+import { execSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 
 program.name('gin').description('A code generator')
@@ -14,7 +14,7 @@ program
   .option('--write-path <value>', 'set the write path', '.')
   .action((options) => {
     message('installing prettier...')
-    exec('npm i -D prettier')
+    execSync('npm i -D prettier')
 
     message('overwriting .prettierrc...')
     const prettier = JSON.stringify({ semi: false, singleQuote: true }, null, 2)
@@ -22,7 +22,7 @@ program
 
     const writePath = options.writePath
     message(`writing package.json "format" script. Write path: ${writePath}`)
-    exec(`npm set-script format "prettier --write ${writePath}"`)
+    execSync(`npm set-script format "prettier --write ${writePath}"`)
 
     message('process complete!')
   })
@@ -35,10 +35,10 @@ program
   .option('--pre-commit <value>', 'pre-commit hook value', 'npm run format')
   .action((options) => {
     message('installing skooh...')
-    exec('npm i -D skooh')
+    execSync('npm i -D skooh')
 
     message('writing prepare script to package.json...')
-    exec('npm set-script prepare skooh')
+    execSync('npm set-script prepare skooh')
 
     const preCommit = options.preCommit
     message(`writing pre-commit hook to package.json: ${preCommit}...`)
@@ -59,12 +59,12 @@ program
   )
   .action(() => {
     message('installing dependencies: next, react, react-dom...')
-    exec('npm i next react react-dom')
+    execSync('npm i next react react-dom')
 
     message(
       'installing dev dependencies: typescript, @types/node, @types/react...'
     )
-    exec('npm i -D typescript @types/node @types/react')
+    execSync('npm i -D typescript @types/node @types/react')
   })
 
 program.parse()
