@@ -4,13 +4,19 @@
   "version": "0.1.5",
   "bin": "index.js",
   "scripts": {
-    "ppp": "npm version patch && git push && npm publish"
+    "ppp": "npm version patch && git push && npm publish",
+    "prepare": "skooh",
+    "format": "prettier --write index.js"
   },
   "author": "Austin Gatlin",
   "dependencies": {
     "commander": "^9.4.0"
   },
   "devDependencies": {
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "skooh": "^0.2.1"
+  },
+  "hooks": {
+    "pre-commit": "npm run format"
   }
 }
