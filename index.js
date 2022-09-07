@@ -6,51 +6,63 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'path'
 
-let actions = []
 program.name('gin').description('A code generator')
 
-actions = [
-  'install dev dependency: prettier',
-  'write default config file: .prettierrc',
-  'write package.json script: "format"',
-]
-program
-  .command('prettier')
-  .description(actions.join('; '))
-  .option('--write-path <value>', 'set the write path', '.')
-  .action((options) => {
-    messageAction(actions[0])
+const up = {
+  actions: ['update gin to the latest version'],
+  action: () => {
+    messageAction(up.actions[0])
+    execSync('npm i -g @aegatlin/gin')
+
+    message('process complete!')
+  },
+}
+program.command('up').description(up.actions.join('; ')).action(up.action)
+
+const prettier = {
+  actions: [
+    'install dev dependency: prettier',
+    'write default config file: .prettierrc',
+    'write package.json script: "format"',
+  ],
+  option: ['--write-path <value>', 'set the write path', '.'],
+  action: (options) => {
+    messageAction(prettier.actions[0])
     execSync('npm i -D prettier')
 
-    messageAction(actions[1])
+    messageAction(prettier.actions[1])
     const prettier = JSON.stringify({ semi: false, singleQuote: true }, null, 2)
     writeFileSync('.prettierrc', `${prettier}\n`)
 
-    messageAction(actions[2])
+    messageAction(prettier.actions[2])
     const writePath = options.writePath
     message(`detected write path: ${writePath}`)
     execSync(`npm set-script format "prettier --write ${writePath}"`)
 
     message('process complete!')
-  })
-
-actions = [
-  'install dev dependency: skooh',
-  'write package.json script: "prepare"',
-  'write package.json "hooks" block',
-]
+  },
+}
 program
-  .command('skooh')
-  .description(actions.join('; '))
-  .option('--pre-commit <value>', 'pre-commit hook value', 'npm run format')
-  .action((options) => {
-    messageAction(actions[0])
+  .command('prettier')
+  .description(prettier.actions.join('; '))
+  .option(...prettier.option)
+  .action(prettier.action)
+
+const skooh = {
+  actions: [
+    'install dev dependency: skooh',
+    'write package.json script: "prepare"',
+    'write package.json "hooks" block',
+  ],
+  option: ['--pre-commit <value>', 'pre-commit hook value', 'npm run format'],
+  action: (options) => {
+    messageAction(skooh.actions[0])
     execSync('npm i -D skooh')
 
-    messageAction(actions[1])
+    messageAction(skooh.actions[1])
     execSync('npm set-script prepare skooh')
 
-    messageAction(actions[2])
+    messageAction(skooh.actions[2])
     const preCommit = options.preCommit
     message(`detected git pre-commit hook: ${preCommit}`)
     const pkg = JSON.parse(readFileSync('./package.json'))
@@ -61,21 +73,25 @@ program
     writeFileSync('./package.json', `${newPkg}\n`)
 
     message('process complete!')
-  })
+  },
+}
+program
+  .command('skooh')
+  .description(skooh.actions.join('; '))
+  .option(...skooh.option)
+  .action(skooh.action)
 
 const next = program
   .command('next')
   .description('code generators for nextjs applications')
 
-actions = [
-  'install dependencies: next, react, react-dom',
-  'install dev dependencies: typescript, @types/node, @types/react',
-  'write default file: pages/index.tsx',
-]
-next
-  .command('init')
-  .description(actions.join('; '))
-  .action(() => {
+const nextInit = {
+  actions: [
+    'install dependencies: next, react, react-dom',
+    'install dev dependencies: typescript, @types/node, @types/react',
+    'write default file: pages/index.tsx',
+  ],
+  action: () => {
     messageAction(actions[0])
     execSync('npm i next react react-dom')
 
@@ -88,17 +104,20 @@ next
     writeFileSync('./pages/index.tsx', content)
 
     message('process complete!')
-  })
-
-actions = [
-  'install dev dependencies: tailwindcss, postcss, and autoprefixer',
-  'write default config files: postcss.config.js and tailwind.config.js',
-  'write default files: src/styles.css and pages/_app.tsx',
-]
+  },
+}
 next
-  .command('tailwind')
-  .description(actions.join('; '))
-  .action(() => {
+  .command('init')
+  .description(nextInit.actions.join('; '))
+  .action(nextInit.action)
+
+const nextTailwind = {
+  actions: [
+    'install dev dependencies: tailwindcss, postcss, and autoprefixer',
+    'write default config files: postcss.config.js and tailwind.config.js',
+    'write default files: src/styles.css and pages/_app.tsx',
+  ],
+  action: () => {
     messageAction(actions[0])
     execSync('npm i -D tailwindcss postcss autoprefixer')
 
@@ -119,7 +138,12 @@ next
     writeFileSync('./pages/_app.tsx', _appContent)
 
     message('process complete!')
-  })
+  },
+}
+next
+  .command('tailwind')
+  .description(nextTailwind.actions.join('; '))
+  .action(nextTailwind.action)
 
 const rootPath = path.dirname(fileURLToPath(import.meta.url))
 const refPath = (filePath) => path.join(rootPath, 'ref', filePath)
