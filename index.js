@@ -68,9 +68,12 @@ program
     )
     execSync('npm i -D typescript @types/node @types/react')
 
+    message('writing default pages/index.tsx file...')
     mkdirSync('./pages', { recursive: true })
     const content = readFileSync(pRefFile('next.pages.index.tsx'))
     writeFileSync('./pages/index.tsx', content)
+
+    message('process complete!')
   })
 
 const pRoot = path.dirname(fileURLToPath(import.meta.url))
