@@ -2,7 +2,9 @@
 
 import { program } from 'commander'
 import { execSync } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import path from 'path'
 
 program.name('gin').description('A code generator')
 
@@ -55,7 +57,7 @@ program
 program
   .command('next')
   .description(
-    'install next, react, react-dom, typescript, @types/node, @types/react.'
+    'installs next, react, react-dom, typescript, @types/node, @types/react, creates "hello, world" pages/index.tsx file.'
   )
   .action(() => {
     message('installing dependencies: next, react, react-dom...')
@@ -65,7 +67,15 @@ program
       'installing dev dependencies: typescript, @types/node, @types/react...'
     )
     execSync('npm i -D typescript @types/node @types/react')
+
+    mkdirSync('./pages', { recursive: true })
+    const content = readFileSync(pRefFile('next.pages.index.tsx'))
+    writeFileSync('./pages/index.tsx', content)
   })
+
+const pRoot = path.dirname(fileURLToPath(import.meta.url))
+const pRef = path.join(pRoot, 'ref')
+const pRefFile = (filePath) => path.join(pRef, filePath)
 
 program.parse()
 
