@@ -6,44 +6,53 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'path'
 
+let actions = []
 program.name('gin').description('A code generator')
 
+actions = [
+  'install dev dependency: prettier',
+  'write default config file: .prettierrc',
+  'write package.json script: "format"',
+]
 program
   .command('prettier')
-  .description(
-    'installs prettier as a dev dependency, writes .prettierrc file, and writes initial "format" script.'
-  )
+  .description(actions.join('; '))
   .option('--write-path <value>', 'set the write path', '.')
   .action((options) => {
-    message('installing prettier...')
+    messageAction(actions[0])
     execSync('npm i -D prettier')
 
-    message('overwriting .prettierrc...')
+    messageAction(actions[1])
     const prettier = JSON.stringify({ semi: false, singleQuote: true }, null, 2)
     writeFileSync('.prettierrc', `${prettier}\n`)
 
+    messageAction(actions[2])
     const writePath = options.writePath
-    message(`writing package.json "format" script. Write path: ${writePath}`)
+    message(`detected write path: ${writePath}`)
     execSync(`npm set-script format "prettier --write ${writePath}"`)
 
     message('process complete!')
   })
 
+actions = [
+  'install dev dependency: skooh',
+  'write package.json script: "prepare"',
+  'write package.json "hooks" block',
+]
 program
   .command('skooh')
-  .description(
-    'installs skooh as a dev dependency, writes the "prepare": "skooh" script, and writes initial hooks block.'
-  )
+  .description(actions.join('; '))
   .option('--pre-commit <value>', 'pre-commit hook value', 'npm run format')
   .action((options) => {
-    message('installing skooh...')
+    messageAction(actions[0])
     execSync('npm i -D skooh')
 
-    message('writing prepare script to package.json...')
+    messageAction(actions[1])
     execSync('npm set-script prepare skooh')
 
+    messageAction(actions[2])
     const preCommit = options.preCommit
-    message(`writing pre-commit hook to package.json: ${preCommit}...`)
+    message(`detected git pre-commit hook: ${preCommit}`)
     const pkg = JSON.parse(readFileSync('./package.json'))
     pkg.hooks = {
       'pre-commit': preCommit,
@@ -54,34 +63,73 @@ program
     message('process complete!')
   })
 
-program
+const next = program
   .command('next')
-  .description(
-    'installs next, react, react-dom, typescript, @types/node, @types/react, creates "hello, world" pages/index.tsx file.'
-  )
+  .description('code generators for nextjs applications')
+
+actions = [
+  'install dependencies: next, react, react-dom',
+  'install dev dependencies: typescript, @types/node, @types/react',
+  'write default file: pages/index.tsx',
+]
+next
+  .command('init')
+  .description(actions.join('; '))
   .action(() => {
-    message('installing dependencies: next, react, react-dom...')
+    messageAction(actions[0])
     execSync('npm i next react react-dom')
 
-    message(
-      'installing dev dependencies: typescript, @types/node, @types/react...'
-    )
+    messageAction(actions[1])
     execSync('npm i -D typescript @types/node @types/react')
 
-    message('writing default pages/index.tsx file...')
+    messageAction(actions[2])
     mkdirSync('./pages', { recursive: true })
-    const content = readFileSync(pRefFile('next.pages.index.tsx'))
+    const content = readFileSync(refPath('next.pages.index.tsx'))
     writeFileSync('./pages/index.tsx', content)
 
     message('process complete!')
   })
 
-const pRoot = path.dirname(fileURLToPath(import.meta.url))
-const pRef = path.join(pRoot, 'ref')
-const pRefFile = (filePath) => path.join(pRef, filePath)
+actions = [
+  'install dev dependencies: tailwindcss, postcss, and autoprefixer',
+  'write default config files: postcss.config.js and tailwind.config.js',
+  'write default files: src/styles.css and pages/_app.tsx',
+]
+next
+  .command('tailwind')
+  .description(actions.join('; '))
+  .action(() => {
+    messageAction(actions[0])
+    execSync('npm i -D tailwindcss postcss autoprefixer')
+
+    messageAction(actions[1])
+    const postcssContent = readFileSync(
+      refPath('next.tailwind/postcss.config.js')
+    )
+    const tailwindContent = readFileSync(
+      refPath('next.tailwind/tailwind.config.js')
+    )
+    writeFileSync('./postcss.config.js', postcssContent)
+    writeFileSync('./tailwind.config.js', tailwindContent)
+
+    messageAction(actions[2])
+    const stylesContent = readFileSync(refPath('next.tailwind/styles.css'))
+    const _appContent = readFileSync(refPath('next.tailwind/pages._app.tsx'))
+    writeFileSync('./src/styles.css', stylesContent)
+    writeFileSync('./pages/_app.tsx', _appContent)
+
+    message('process complete!')
+  })
+
+const rootPath = path.dirname(fileURLToPath(import.meta.url))
+const refPath = (filePath) => path.join(rootPath, 'ref', filePath)
 
 program.parse()
 
 function message(msg) {
   console.log(`\ngin: ${msg}`)
+}
+
+function messageAction(msgAction) {
+  message(`action: ${msgAction}...`)
 }
