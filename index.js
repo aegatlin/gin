@@ -145,6 +145,22 @@ next
   .description(nextTailwind.actions.join('; '))
   .action(nextTailwind.action)
 
+const vscode = program
+  .command('vscode')
+  .description('code generators for vscode')
+const vscodeTasks = {
+  actions: ['write .vscode/tasks.json file'],
+  action: () => {
+    const tasksContent = readFileSync(refPath('vscode/tasks.json'))
+    mkdirSync('./.vscode', { recursive: true })
+    writeFileSync('./.vscode/tasks.json', tasksContent)
+  },
+}
+vscode
+  .command('tasks')
+  .description(vscodeTasks.actions.join('; '))
+  .action(vscodeTasks.action)
+
 const rootPath = path.dirname(fileURLToPath(import.meta.url))
 const refPath = (filePath) => path.join(rootPath, 'ref', filePath)
 
