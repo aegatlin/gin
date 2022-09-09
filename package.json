@@ -1,7 +1,7 @@
 {
   "name": "@aegatlin/gin",
   "type": "module",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "bin": "index.js",
   "scripts": {
     "ppp": "npm version patch && git push && npm publish",
