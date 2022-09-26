@@ -1,33 +1,23 @@
-import { Option } from 'commander'
 import { writeFileSync } from 'fs'
 import { execSync } from 'node:child_process'
-import { mkdirSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'path'
+import { Action } from './action.js'
 
-const actionBuilder = {
-  installDependencies: (names, opts = {}) => {
-    return {
-      description: `install ${opts.dev ? 'dev' : opts.global ? 'global' : ''} ${
-        names.length > 1 ? 'dependencies' : 'dependency'
-      }: ${names.join(' ')}`,
-      action: () => {
-        let install = 'i'
-        if (opts?.dev) install += ' -D'
-        if (opts?.global) install += ' -g'
+export function message(msg) {
+  console.log(`\ngin: ${msg}`)
+}
 
-        execSync(`npm ${install} ${names.join(' ')}`)
-      },
-    }
-  },
+function refPath(filePath) {
+  const rootPath = path.dirname(fileURLToPath(import.meta.url))
+  return path.join(rootPath, 'ref', filePath)
 }
 
 export const commands = [
   {
     name: 'up',
-    actions: [
-      actionBuilder.installDependencies(['@aegatlin/gin'], { global: true }),
-    ],
+    actions: [Action.installDeps(['@aegatlin/gin'], { global: true })],
   },
   {
     name: 'prettier',
@@ -35,18 +25,8 @@ export const commands = [
       { flags: '--writePath <value>', description: 'set the write path' },
     ],
     actions: [
-      actionBuilder.installDependencies(['prettier'], { dev: true }),
-      {
-        description: 'write default config file: .prettierrc',
-        action: () => {
-          const prettierrcContent = JSON.stringify(
-            { semi: false, singleQuote: true },
-            null,
-            2
-          )
-          writeFileSync('.prettierrc', `${prettierrcContent}\n`)
-        },
-      },
+      Action.installDeps(['prettier'], { dev: true }),
+      Action.writeFile('./.prettierrc', refPath('prettier/.prettierrc')),
       {
         description: 'write package.json script: "format"',
         action: ({ writePath }) => {
@@ -65,7 +45,7 @@ export const commands = [
       },
     ],
     actions: [
-      actionBuilder.installDependencies(['skooh'], { dev: true }),
+      Action.installDeps(['skooh'], { dev: true }),
       {
         description: 'npm set-script "prepare: skooh"',
         action: () => {
@@ -93,56 +73,38 @@ export const commands = [
       {
         name: 'init',
         actions: [
-          actionBuilder.installDependencies(['next', 'react', 'react-dom']),
-          actionBuilder.installDependencies(
-            ['typescript', '@types/node', '@types/react'],
-            { dev: true }
+          Action.installDeps(['next', 'react', 'react-dom']),
+          Action.installDeps(['typescript', '@types/node', '@types/react'], {
+            dev: true,
+          }),
+          Action.writeFile(
+            './pages/index.tsx',
+            refPath('next/init/pages-index.tsx')
           ),
-          {
-            description: 'write default file: pages/index.tsx',
-            action: () => {
-              mkdirSync('./pages', { recursive: true })
-              const content = readFileSync(refPath('next.pages.index.tsx'))
-              writeFileSync('./pages/index.tsx', content)
-            },
-          },
         ],
       },
       {
         name: 'tailwind',
         actions: [
-          actionBuilder.installDependencies(
-            ['tailwindcss', 'postcss', 'autoprefixer'],
-            { dev: true }
+          Action.installDeps(['tailwindcss', 'postcss', 'autoprefixer'], {
+            dev: true,
+          }),
+          Action.writeFile(
+            './postcss.config.js',
+            refPath('next/tailwind/postcss.config.js')
           ),
-          {
-            description:
-              'write default config files: postcss.config.js and tailwind.config.js',
-            action: () => {
-              const postcssContent = readFileSync(
-                refPath('next.tailwind/postcss.config.js')
-              )
-              const tailwindContent = readFileSync(
-                refPath('next.tailwind/tailwind.config.js')
-              )
-              writeFileSync('./postcss.config.js', postcssContent)
-              writeFileSync('./tailwind.config.js', tailwindContent)
-            },
-          },
-          {
-            description:
-              'write default files: src/styles.css and pages/_app.tsx',
-            action: () => {
-              const stylesContent = readFileSync(
-                refPath('next.tailwind/styles.css')
-              )
-              const _appContent = readFileSync(
-                refPath('next.tailwind/pages._app.tsx')
-              )
-              writeFileSync('./src/styles.css', stylesContent)
-              writeFileSync('./pages/_app.tsx', _appContent)
-            },
-          },
+          Action.writeFile(
+            './tailwind.config.js',
+            refPath('next/tailwind/tailwind.config.js')
+          ),
+          Action.writeFile(
+            './src/styles.css',
+            refPath('next/tailwind/src-styles.css')
+          ),
+          Action.writeFile(
+            './pages/_app.tsx',
+            refPath('next/tailwind/pages-_app.tsx')
+          ),
         ],
       },
     ],
@@ -155,55 +117,36 @@ export const commands = [
         name: 'tasks',
         options: [],
         actions: [
-          {
-            description: 'write .vscode/tasks.json file',
-            action: () => {
-              const tasksContent = readFileSync(refPath('vscode/tasks.json'))
-              mkdirSync('./.vscode', { recursive: true })
-              writeFileSync('./.vscode/tasks.json', tasksContent)
-            },
-          },
+          Action.writeFile(
+            './.vscode/tasks.json',
+            refPath('vscode/tasks.json')
+          ),
+        ],
+      },
+    ],
+  },
+  {
+    name: 'react',
+    description:
+      'React code generator. All code assumes TypeScript and Tailwind.',
+    subCommands: [
+      {
+        name: 'core',
+        actions: [
+          Action.writeFile(
+            './components/core/Card.tsx',
+            refPath('react/core/Card.tsx')
+          ),
+          Action.writeFile(
+            './components/core/Header.tsx',
+            refPath('react/core/Header.tsx')
+          ),
+          Action.writeFile(
+            './components/core/Page.tsx',
+            refPath('react/core/Page.tsx')
+          ),
         ],
       },
     ],
   },
 ]
-
-export function commanderJsAdapter(command, data) {
-  const { name, description, subCommands } = data
-
-  if (subCommands) {
-    subCommands.forEach((subCommand) => {
-      const subC = command.command(subCommand.name)
-      commanderJsAdapter(subC, subCommand)
-    })
-  }
-
-  if (description) {
-    command.description(description)
-  } else {
-    command.description(data.actions.map((a) => a.description).join('\n'))
-  }
-
-  if (data.options) {
-    data.options.forEach((o) => {
-      command.addOption(new Option(o.flags, o.description))
-    })
-  }
-
-  if (data.actions) {
-    command.action((options) => {
-      data.actions.forEach((a) => {
-        message(`action: ${a.description}`)
-        a.action(options)
-      })
-    })
-  }
-}
-
-function message(msg) {
-  console.log(`\ngin: ${msg}`)
-}
-
-const rootPath = path.dirname(fileURLToPath(import.meta.url))
-const refPath = (filePath) => path.join(rootPath, 'ref', filePath)

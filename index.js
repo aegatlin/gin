@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Option, program } from 'commander'
-import { commands } from './commands.js'
+import { commands, message } from './commands.js'
 
 function commanderJsAdapter(command, data) {
   const { name, description, subCommands } = data
