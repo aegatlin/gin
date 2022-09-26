@@ -169,6 +169,23 @@ export const commands = [
           ),
         ],
       },
+      {
+        name: 'page',
+        options: [
+          {
+            flags: '--path <value>',
+            description:
+              'path to file (including name, e.g., ./custom/path/my-page.tsx',
+            default: './components/core/Page.tsx',
+          },
+        ],
+        actions: [
+          Action.writeFile(
+            './components/core/Page.tsx',
+            refPath('react/core/Page.tsx')
+          ),
+        ],
+      },
     ],
   },
 ]
