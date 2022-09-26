@@ -1,4 +1,1 @@
-export function Button() {
-
-
-}
+export function Button() {}

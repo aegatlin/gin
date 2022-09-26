@@ -6,7 +6,7 @@
   "scripts": {
     "ppp": "npm version patch && git push && npm publish",
     "prepare": "skooh",
-    "format": "prettier --write index.js"
+    "format": "prettier --write index.js commands.js"
   },
   "author": "Austin Gatlin",
   "dependencies": {
