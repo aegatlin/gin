@@ -22,15 +22,20 @@ export const commands = [
   {
     name: 'prettier',
     options: [
-      { flags: '--writePath <value>', description: 'set the write path' },
+      {
+        flags: '--write-glob <value>',
+        description:
+          'Set the glob value of the write call, e.g., prettier --write [glob]',
+        default: '.',
+      },
     ],
     actions: [
       Action.installDeps(['prettier'], { dev: true }),
       Action.writeFile('./.prettierrc', refPath('prettier/.prettierrc')),
       {
         description: 'write package.json script: "format"',
-        action: ({ writePath }) => {
-          execSync(`npm set-script "format: prettier --write ${writePath}"`)
+        action: ({ writeGlob }) => {
+          execSync(`npm set-script "format: prettier --write ${writeGlob}"`)
         },
       },
     ],
@@ -144,6 +149,23 @@ export const commands = [
           Action.writeFile(
             './components/core/Page.tsx',
             refPath('react/core/Page.tsx')
+          ),
+        ],
+      },
+      {
+        name: 'card',
+        options: [
+          {
+            flags: '--path <value>',
+            description:
+              'path to file (including name, e.g., ./custom/path/my-card.tsx',
+            default: './components/core/Card.tsx',
+          },
+        ],
+        actions: [
+          Action.writeFile(
+            './components/core/Card.tsx',
+            refPath('react/core/Card.tsx')
           ),
         ],
       },

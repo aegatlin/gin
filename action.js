@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'fs'
 import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
-import path from 'path'
+import { parse } from 'path'
 
 export const Action = {
   installDeps: (names, opts = {}) => {
@@ -21,10 +21,10 @@ export const Action = {
   writeFile: (filePath, referenceFilePath) => {
     return {
       description: `write default file: ${filePath}`,
-      action: () => {
-        const { dir } = path.parse(filePath)
+      action: ({ path } = { path: filePath }) => {
+        const { dir } = parse(path)
         mkdirSync(dir, { recursive: true })
-        writeFileSync(filePath, readFileSync(referenceFilePath))
+        writeFileSync(path, readFileSync(referenceFilePath))
       },
     }
   },

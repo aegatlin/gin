@@ -21,7 +21,11 @@ function commanderJsAdapter(command, data) {
 
   if (data.options) {
     data.options.forEach((o) => {
-      command.addOption(new Option(o.flags, o.description))
+      const option = new Option(o.flags, o.description)
+      if (o.default) {
+        option.default(o.default)
+      }
+      command.addOption(option)
     })
   }
 
