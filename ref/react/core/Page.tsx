@@ -1,10 +1,10 @@
-import { Header } from '..'
+import { Header } from './Header'
 
 export function Page({ children }) {
   return (
     <>
-      <Header.Main />
-      <div className="flex flex-col items-center mt-16">{children}</div>
+      <Header />
+      <div className="mt-16 flex flex-col items-center">{children}</div>
     </>
   )
 }

@@ -17,7 +17,7 @@ function refPath(filePath) {
 export const commands = [
   {
     name: 'up',
-    actions: [Action.installDeps(['@aegatlin/gin'], { global: true })],
+    actions: [Action.installDeps(['@aegatlin/gin@latest'], { global: true })],
   },
   {
     name: 'prettier',
