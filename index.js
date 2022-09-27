@@ -13,11 +13,10 @@ function commanderJsAdapter(command, data) {
     })
   }
 
-  if (description) {
-    command.description(description)
-  } else {
-    command.description(data.actions.map((a) => a.description).join('\n'))
-  }
+  let desc = ''
+  if (description) desc += `${description}\n`
+  if (data.actions) data.actions.forEach((a) => (desc += `${a.description}\n`))
+  command.description(desc)
 
   if (data.options) {
     data.options.forEach((o) => {

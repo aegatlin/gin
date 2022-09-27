@@ -18,13 +18,25 @@ export const Action = {
       },
     }
   },
-  writeFile: (filePath, referenceFilePath) => {
+  writeFile: (defaultFilePath, referenceFilePath, optionName) => {
     return {
-      description: `write default file: ${filePath}`,
-      action: ({ path } = { path: filePath }) => {
-        const { dir } = parse(path)
+      description: `write default file: ${defaultFilePath}`,
+      action: (options) => {
+        let filePath = options[optionName] || defaultFilePath
+        const { dir } = parse(filePath)
         mkdirSync(dir, { recursive: true })
-        writeFileSync(path, readFileSync(referenceFilePath))
+        writeFileSync(filePath, readFileSync(referenceFilePath))
+      },
+    }
+  },
+  setScript: (scriptName, { optionName, defaultScript }) => {
+    return {
+      description: `write npm script: ${scriptName}${
+        defaultScript ? `: ${defaultScript}` : ''
+      }`,
+      action: (options) => {
+        const script = options[optionName] || defaultScript || ''
+        execSync(`npm set-script "${scriptName}" "${script}"`)
       },
     }
   },

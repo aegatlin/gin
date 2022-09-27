@@ -1,5 +1,5 @@
+import { execSync } from 'child_process'
 import { writeFileSync } from 'fs'
-import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'path'
@@ -23,40 +23,30 @@ export const commands = [
     name: 'prettier',
     options: [
       {
-        flags: '--write-glob <value>',
-        description:
-          'Set the glob value of the write call, e.g., prettier --write [glob]',
-        default: '.',
+        flags: '--format-script <value>',
+        description: 'Set the format script',
+        default: 'prettier --write .',
       },
     ],
     actions: [
       Action.installDeps(['prettier'], { dev: true }),
       Action.writeFile('./.prettierrc', refPath('prettier/.prettierrc')),
-      {
-        description: 'write package.json script: "format"',
-        action: ({ writeGlob }) => {
-          execSync(`npm set-script "format: prettier --write ${writeGlob}"`)
-        },
-      },
+      Action.setScript('format', { optionName: 'formatScript' }),
     ],
   },
   {
     name: 'skooh',
     options: [
       {
-        flags: '--pre-commit <value>',
-        description: 'pre-commit hook value',
+        flags: '--pre-commit-hook <value>',
+        description:
+          'pre-commit hook value, e.g., hooks["pre-commit"] = "npm run format"',
         default: 'npm run format',
       },
     ],
     actions: [
       Action.installDeps(['skooh'], { dev: true }),
-      {
-        description: 'npm set-script "prepare: skooh"',
-        action: () => {
-          execSync(`npm set-script prepare skooh`)
-        },
-      },
+      Action.setScript('prepare', { defaultScript: 'skooh' }),
       {
         description: 'write package.json "hooks" block',
         action: ({ preCommit }) => {
@@ -100,7 +90,7 @@ export const commands = [
           ),
           Action.writeFile(
             './tailwind.config.js',
-            refPath('next/tailwind/tailwind.config.js')
+            refPath('next/tailwind/tailwind-config.js')
           ),
           Action.writeFile(
             './src/styles.css',
@@ -120,7 +110,6 @@ export const commands = [
     subCommands: [
       {
         name: 'tasks',
-        options: [],
         actions: [
           Action.writeFile(
             './.vscode/tasks.json',
@@ -165,7 +154,8 @@ export const commands = [
         actions: [
           Action.writeFile(
             './components/core/Card.tsx',
-            refPath('react/core/Card.tsx')
+            refPath('react/core/Card.tsx'),
+            'path'
           ),
         ],
       },
@@ -182,9 +172,37 @@ export const commands = [
         actions: [
           Action.writeFile(
             './components/core/Page.tsx',
-            refPath('react/core/Page.tsx')
+            refPath('react/core/Page.tsx'),
+            path
           ),
         ],
+      },
+    ],
+  },
+  {
+    name: 'playwright',
+    description: 'playwright generator',
+    actions: [
+      Action.installDeps(['@playwright/test'], { dev: true }),
+      Action.writeFile(
+        './tests/index.spec.ts',
+        refPath('playwright/index.spec.ts')
+      ),
+      Action.writeFile(
+        './playwright.config.ts',
+        refPath('playwright/playwright.config.ts')
+      ),
+      Action.setScript('test', { defaultScript: 'playwright test' }),
+    ],
+  },
+  {
+    name: 'github',
+    description: 'github generators',
+    subCommands: [
+      {
+        name: 'cicd',
+        description: 'writes a github actions workflow for cicd',
+        actions: [Action.writeFile('./.github/workflows/cicd.yml')],
       },
     ],
   },
