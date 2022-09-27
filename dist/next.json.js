@@ -18,7 +18,7 @@ export const next = {
                 Action.setScript('build', { defaultScript: 'next build' }),
                 Action.setScript('start', { defaultScript: 'next start' }),
                 Action.writeFile('./.gitignore', {
-                    referenceFilePath: refPath('next/init/.gitignore'),
+                    referenceFilePath: refPath('next/init/git-ignore'),
                 }),
             ],
         },
