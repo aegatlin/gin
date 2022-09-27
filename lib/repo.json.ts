@@ -22,7 +22,6 @@ export const repo: GinCommand = {
         },
       ],
       actions: [
-        ...Actions.fromCommand(github, { subCommand: 'create-repo' }),
         ...Actions.fromCommand(next, { subCommand: 'init' }),
         ...Actions.fromCommand(next, { subCommand: 'tailwind' }),
         ...Actions.fromCommand(prettier),
