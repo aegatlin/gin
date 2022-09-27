@@ -14,6 +14,9 @@ export const prettier = {
         Action.writeFile('./.prettierrc', {
             referenceFilePath: refPath('prettier/.prettierrc'),
         }),
-        Action.setScript('format', { optionName: 'formatScript' }),
+        Action.setScript('format', {
+            optionName: 'formatScript',
+            defaultScript: 'prettier --write .',
+        }),
     ],
 };

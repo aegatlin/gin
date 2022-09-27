@@ -18,11 +18,11 @@ export const skooh: GinCommand = {
     Action.setScript('prepare', { defaultScript: 'skooh' }),
     {
       description: 'write package.json "hooks" block',
-      action: ({ preCommit }) => {
-        message(`detected git pre-commit hook: ${preCommit}`)
+      action: ({ preCommitHook }) => {
+        message(`detected git pre-commit hook: ${preCommitHook}`)
         const pkg = JSON.parse(readFileSync('./package.json', 'utf8'))
         pkg.hooks = {
-          'pre-commit': preCommit,
+          'pre-commit': preCommitHook,
         }
         const newPkg = JSON.stringify(pkg, null, 2)
         writeFileSync('./package.json', `${newPkg}\n`)
