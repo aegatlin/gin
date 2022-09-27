@@ -3,7 +3,6 @@ import { github } from './github.json.js'
 import { next } from './next.json.js'
 import { playwright } from './playwright.json.js'
 import { prettier } from './prettier.json.js'
-import { react } from './react.json.js'
 import { skooh } from './skooh.json.js'
 import { GinCommand } from './types.js'
 import { vscode } from './vscode.json.js'
@@ -29,7 +28,6 @@ export const repo: GinCommand = {
         ...Actions.fromCommand(github, { subCommand: 'cicd' }),
         ...Actions.fromCommand(vscode, { subCommand: 'tasks' }),
         ...Actions.fromCommand(skooh),
-        ...Actions.fromCommand(react, { subCommand: 'core' }),
       ],
     },
   ],

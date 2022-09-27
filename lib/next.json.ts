@@ -1,4 +1,5 @@
-import { Action } from './action.js'
+import { Action, Actions } from './action.js'
+import { react } from './react.json.js'
 import { GinCommand } from './types.js'
 import { refPath } from './utils.js'
 
@@ -9,19 +10,20 @@ export const next: GinCommand = {
     {
       name: 'init',
       actions: [
+        Action.setScript('dev', { defaultScript: 'next dev' }),
+        Action.setScript('build', { defaultScript: 'next build' }),
+        Action.setScript('start', { defaultScript: 'next start' }),
         Action.installDeps(['next', 'react', 'react-dom']),
         Action.installDeps(['typescript', '@types/node', '@types/react'], {
           dev: true,
         }),
-        Action.writeFile('./pages/index.tsx', {
-          referenceFilePath: refPath('next/init/pages-index.tsx'),
-        }),
-        Action.setScript('dev', { defaultScript: 'next dev' }),
-        Action.setScript('build', { defaultScript: 'next build' }),
-        Action.setScript('start', { defaultScript: 'next start' }),
         Action.writeFile('./.gitignore', {
           referenceFilePath: refPath('next/init/git-ignore'),
         }),
+        Action.writeFile('./pages/index.tsx', {
+          referenceFilePath: refPath('next/init/pages-index.tsx'),
+        }),
+        ...Actions.fromCommand(react, { subCommand: 'core' }),
       ],
     },
     {
