@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 
 export function refPath(filePath) {
   const rootPath = path.dirname(fileURLToPath(import.meta.url))
-  return path.join(rootPath, 'lib/ref', filePath)
+  return path.join(rootPath, '../ref', filePath)
 }
 
 export function message(msg) {
