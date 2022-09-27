@@ -1,9 +1,7 @@
-#!/usr/bin/env node
+import { Option } from 'commander'
+import { message } from './utils.js'
 
-import { Option, program } from 'commander'
-import { commands, message } from './commands.js'
-
-function commanderJsAdapter(command, data) {
+export function commanderJsAdapter(command, data) {
   const { name, description, subCommands } = data
 
   if (subCommands) {
@@ -37,12 +35,3 @@ function commanderJsAdapter(command, data) {
     })
   }
 }
-
-program.name('gin').description('A code generator')
-
-commands.forEach((commandData) => {
-  const programCommand = program.command(commandData.name)
-  commanderJsAdapter(programCommand, commandData)
-})
-
-program.parse()

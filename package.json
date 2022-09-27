@@ -2,19 +2,24 @@
   "name": "@aegatlin/gin",
   "type": "module",
   "version": "0.2.11",
-  "bin": "index.js",
+  "bin": "dist/index.js",
   "scripts": {
     "ppp": "npm version patch && git push && npm publish",
     "prepare": "skooh",
-    "format": "prettier --write index.js commands.js"
+    "format": "prettier --write lib",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "node dist/index.js"
   },
   "author": "Austin Gatlin",
   "dependencies": {
     "commander": "^9.4.0"
   },
   "devDependencies": {
+    "@types/node": "^18.7.23",
     "prettier": "^2.7.1",
-    "skooh": "^0.2.1"
+    "skooh": "^0.2.1",
+    "typescript": "^4.8.3"
   },
   "hooks": {
     "pre-commit": "npm run format"
