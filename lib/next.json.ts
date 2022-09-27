@@ -19,7 +19,7 @@ export const next: GinCommand = {
         Action.setScript('dev', { defaultScript: 'next dev' }),
         Action.setScript('build', { defaultScript: 'next build' }),
         Action.setScript('start', { defaultScript: 'next start' }),
-        Action.writeFile('.gitignore', {
+        Action.writeFile('./.gitignore', {
           referenceFilePath: refPath('next/init/.gitignore'),
         }),
       ],
