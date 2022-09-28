@@ -1,6 +1,7 @@
 import { Action, Actions } from '../action.js';
 import { react } from './react.json.js';
 import { refPath } from '../utils.js';
+import { execSync } from 'child_process';
 export const next = {
     name: 'next',
     description: 'Nextjs generators.',
@@ -8,6 +9,12 @@ export const next = {
         {
             name: 'init',
             actions: [
+                {
+                    description: 'Run "npm init -y"',
+                    action: () => {
+                        execSync('npm init -y');
+                    },
+                },
                 Action.setScript('dev', 'next dev'),
                 Action.setScript('build', 'next build'),
                 Action.setScript('start', 'next start'),
