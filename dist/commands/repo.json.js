@@ -13,8 +13,7 @@ export const repo = {
             name: 'next',
             description: 'Generate an initial, fully functional nextjs repository.',
             actions: [
-                ...Actions.fromCommand(next, { subCommand: 'init' }),
-                ...Actions.fromCommand(next, { subCommand: 'tailwind' }),
+                ...Actions.fromCommand(next, { subCommand: 'bootstrap' }),
                 ...Actions.fromCommand(prettier),
                 ...Actions.fromCommand(playwright),
                 ...Actions.fromCommand(github, { subCommand: 'cicd' }),
