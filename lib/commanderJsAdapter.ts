@@ -33,8 +33,6 @@ function prepareCommand(parent: Command, ginCommand: GinCommand) {
       return acc
     }, [])
 
-    if (name == 'next') console.log(options)
-
     options.forEach((o) => {
       const opt = new Option(o.flags, o.description)
       if (o.default) opt.default(o.default)
