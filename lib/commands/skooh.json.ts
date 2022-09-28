@@ -1,23 +1,22 @@
 import { readFileSync, writeFileSync } from 'fs'
-import { Action } from './action.js'
-import { GinCommand } from './types.js'
-import { message } from './utils.js'
+import { Action } from '../action.js'
+import { GinCommand } from '../types.js'
+import { message } from '../utils.js'
 
 export const skooh: GinCommand = {
   name: 'skooh',
-  options: [
-    {
-      flags: '--pre-commit-hook <value>',
-      description:
-        'pre-commit hook value, e.g., hooks["pre-commit"] = "npm run format"',
-      default: 'npm run format',
-    },
-  ],
   actions: [
     Action.installDeps(['skooh'], { dev: true }),
-    Action.setScript('prepare', { defaultScript: 'skooh' }),
+    Action.setScript('prepare', 'skooh'),
     {
       description: 'write package.json "hooks" block',
+      inputs: [
+        {
+          flags: '--pre-commit-hook <value>',
+          description: 'Set custom pre-commit hook.',
+          default: 'npm run format',
+        },
+      ],
       action: ({ preCommitHook }) => {
         message(`detected git pre-commit hook: ${preCommitHook}`)
         const pkg = JSON.parse(readFileSync('./package.json', 'utf8'))

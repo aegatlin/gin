@@ -1,25 +1,19 @@
-import { Actions } from './action.js'
+import { Actions } from '../action.js'
 import { github } from './github.json.js'
 import { next } from './next.json.js'
 import { playwright } from './playwright.json.js'
 import { prettier } from './prettier.json.js'
 import { skooh } from './skooh.json.js'
-import { GinCommand } from './types.js'
+import { GinCommand } from '../types.js'
 import { vscode } from './vscode.json.js'
 
 export const repo: GinCommand = {
   name: 'repo',
-  description: 'generate entire repositories',
+  description: 'Repository generators.',
   subCommands: [
     {
       name: 'next',
-      description: 'An entire nextjs repository',
-      options: [
-        {
-          flags: '--name <value>',
-          description: 'Name of the repository',
-        },
-      ],
+      description: 'Generate an initial, fully functional nextjs repository.',
       actions: [
         ...Actions.fromCommand(next, { subCommand: 'init' }),
         ...Actions.fromCommand(next, { subCommand: 'tailwind' }),

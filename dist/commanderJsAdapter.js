@@ -1,31 +1,38 @@
 import { Option } from 'commander';
 import { message } from './utils.js';
-export function commanderJsAdapter(command, data) {
-    const { name, description, subCommands } = data;
-    if (subCommands) {
-        subCommands.forEach((subCommand) => {
-            const subC = command.command(subCommand.name);
-            commanderJsAdapter(subC, subCommand);
-        });
-    }
-    let desc = '';
+export function commanderJsAdapter(program, ginCommands) {
+    program.name('gin').description('Code Generators.');
+    ginCommands.forEach((gc) => prepareCommand(program, gc));
+    program.parse();
+}
+function prepareCommand(parent, ginCommand) {
+    var _a;
+    const { name, description, subCommands, actions } = ginCommand;
+    const c = parent.command(name);
+    const desc = (_a = actions === null || actions === void 0 ? void 0 : actions.map((a) => a.description)) !== null && _a !== void 0 ? _a : [];
     if (description)
-        desc += `${description}\n`;
-    if (data.actions)
-        data.actions.forEach((a) => (desc += `${a.description}\n`));
-    command.description(desc);
-    if (data.options) {
-        data.options.forEach((o) => {
-            const option = new Option(o.flags, o.description);
-            if (o.default) {
-                option.default(o.default);
-            }
-            command.addOption(option);
-        });
+        desc.unshift(description);
+    c.description(desc.join('\n'));
+    if (subCommands) {
+        subCommands.forEach((subC) => prepareCommand(c, subC));
     }
-    if (data.actions) {
-        command.action((options) => {
-            data.actions.forEach((a) => {
+    if (actions) {
+        const options = ginCommand.actions.reduce((acc, { inputs }) => {
+            if (!inputs)
+                return acc;
+            acc.push(...inputs);
+            return acc;
+        }, []);
+        if (name == 'next')
+            console.log(options);
+        options.forEach((o) => {
+            const opt = new Option(o.flags, o.description);
+            if (o.default)
+                opt.default(o.default);
+            c.addOption(opt);
+        });
+        c.action((options) => {
+            actions.forEach((a) => {
                 message(`action: ${a.description}`);
                 a.action(options);
             });

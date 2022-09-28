@@ -1,19 +1,16 @@
 import { execSync } from 'child_process';
 export const git = {
     name: 'git',
-    description: 'git generators',
+    description: 'Git generators.',
     subCommands: [
         {
             name: 'init',
-            options: [
-                {
-                    flags: '--name <value>',
-                    description: 'Name of directory',
-                },
-            ],
             actions: [
                 {
                     description: 'mkdir and initialize empty git',
+                    inputs: [
+                        { flags: '--name <value>', description: 'name of directory' },
+                    ],
                     action: ({ name }) => {
                         execSync(`mkdir ${name} && cd ${name} && git init`);
                     },

@@ -1,6 +1,6 @@
 import { execSync } from 'child_process'
-import { Action } from './action.js'
-import { GinAction, GinCommand } from './types.js'
+import { Action } from '../action.js'
+import { GinAction, GinCommand } from '../types.js'
 
 const reportAction: GinAction = {
   description: 'Report current global gin version',

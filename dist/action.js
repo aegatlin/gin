@@ -3,9 +3,15 @@ import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { parse } from 'path';
 export const Action = {
-    installDeps: (names, opts) => {
+    installDeps(names, opts) {
+        let d = 'install ';
+        d += (opts === null || opts === void 0 ? void 0 : opts.dev) ? 'dev ' : '';
+        d += (opts === null || opts === void 0 ? void 0 : opts.global) ? 'global ' : '';
+        d += names.length > 1 ? 'dependencies: ' : 'dependency: ';
+        d += names.join(' ');
+        d += '.';
         return {
-            description: `install${(opts === null || opts === void 0 ? void 0 : opts.dev) ? ' dev' : (opts === null || opts === void 0 ? void 0 : opts.global) ? ' global' : ''} ${names.length > 1 ? 'dependencies' : 'dependency'}: ${names.join(' ')}`,
+            description: d,
             action: () => {
                 let install = 'i';
                 if (opts === null || opts === void 0 ? void 0 : opts.dev)
@@ -16,23 +22,43 @@ export const Action = {
             },
         };
     },
-    writeFile: (defaultFilePath, { optionName, referenceFilePath, }) => {
+    writeFile(filePath, referenceFilePath) {
         return {
-            description: `write default file: ${defaultFilePath}`,
-            action: (options) => {
-                let filePath = options[optionName] || defaultFilePath;
+            description: `Write file: "${filePath}".`,
+            action: () => {
                 const { dir } = parse(filePath);
                 mkdirSync(dir, { recursive: true });
                 writeFileSync(filePath, readFileSync(referenceFilePath));
             },
         };
     },
-    setScript: (scriptName, { optionName, defaultScript, }) => {
+    writeFileWithInput({ inputKey, input, }, referenceFilePath) {
         return {
-            description: `write npm script: ${scriptName}${defaultScript ? `: ${defaultScript}` : ''}`,
+            description: `Write file based on "${input.flags}". Defaults to: "${input.default}".`,
+            inputs: [input],
             action: (options) => {
-                const script = options[optionName] || defaultScript || '';
-                execSync(`npm set-script "${scriptName}" "${script}"`);
+                const filePath = options[inputKey];
+                const { dir } = parse(filePath);
+                mkdirSync(dir, { recursive: true });
+                writeFileSync(filePath, readFileSync(referenceFilePath));
+            },
+        };
+    },
+    setScript(scriptName, scriptValue) {
+        return {
+            description: `Write package.json script: "${scriptName}".`,
+            action: () => {
+                execSync(`npm set-script "${scriptName}" "${scriptValue}"`);
+            },
+        };
+    },
+    setScriptWithInput(scriptName, { inputKey, input }) {
+        return {
+            description: `Write package.json script: "${scriptName}".`,
+            inputs: [input],
+            action: (options) => {
+                const scriptValue = options[inputKey];
+                execSync(`npm set-script "${scriptName}" "${scriptValue}"`);
             },
         };
     },

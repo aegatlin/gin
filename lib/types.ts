@@ -1,4 +1,4 @@
-interface GinOption {
+export interface GinInput {
   flags: string
   description: string
   default?: string
@@ -6,6 +6,7 @@ interface GinOption {
 
 export interface GinAction {
   description: string
+  inputs?: GinInput[]
   action: (options?: any) => void
 }
 
@@ -13,6 +14,5 @@ export interface GinCommand {
   name: string
   description?: string
   subCommands?: GinCommand[]
-  options?: GinOption[]
   actions?: GinAction[]
 }
