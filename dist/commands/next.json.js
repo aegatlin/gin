@@ -14,6 +14,7 @@ const initCommand = {
         Action.setScript('dev', 'next dev'),
         Action.setScript('build', 'next build'),
         Action.setScript('start', 'next start'),
+        Action.setScript('lint', 'next lint'),
         Action.installDeps(['next', 'react', 'react-dom']),
         Action.installDeps(['typescript', '@types/node', '@types/react'], {
             dev: true,
@@ -26,7 +27,7 @@ const initCommand = {
 const tailwindCommand = {
     name: 'tailwind',
     actions: [
-        Action.installDeps(['tailwindcss', 'postcss', 'autoprefixer'], {
+        Action.installDeps(['tailwindcss', 'postcss', 'autoprefixer', 'prettier-plugin-tailwindcss'], {
             dev: true,
         }),
         Action.writeFile('./postcss.config.js', refPath('next/tailwind/postcss.config.js')),
