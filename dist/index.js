@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { program } from 'commander';
 import { commanderJsAdapter } from './commanderJsAdapter.js';
+import { asdf } from './commands/asdf.json.js';
 import { git } from './commands/git.json.js';
 import { github } from './commands/github.json.js';
 import { next } from './commands/next.json.js';
@@ -12,6 +13,7 @@ import { skooh } from './commands/skooh.json.js';
 import { up } from './commands/up.json.js';
 import { vscode } from './commands/vscode.json.js';
 const commands = [
+    asdf,
     git,
     github,
     next,

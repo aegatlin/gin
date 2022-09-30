@@ -1,18 +1,12 @@
 import { Action, Actions } from '../action.js'
-import { react } from './react.json.js'
 import { GinCommand } from '../types.js'
 import { refPath } from '../utils.js'
-import { execSync } from 'child_process'
+import { react } from './react.json.js'
 
 const initCommand = {
   name: 'init',
   actions: [
-    {
-      description: 'Run "npm init -y"',
-      action: () => {
-        execSync('npm init -y')
-      },
-    },
+    Action.execShellScript('npm init -y'),
     Action.setScript('dev', 'next dev'),
     Action.setScript('build', 'next build'),
     Action.setScript('start', 'next start'),

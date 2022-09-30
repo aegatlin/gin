@@ -9,7 +9,7 @@ export const Action = {
     names: string[],
     opts?: { dev?: boolean; global?: boolean }
   ): GinAction {
-    let d = 'install '
+    let d = 'Install '
     d += opts?.dev ? 'dev ' : ''
     d += opts?.global ? 'global ' : ''
     d += names.length > 1 ? 'dependencies: ' : 'dependency: '
@@ -76,6 +76,14 @@ export const Action = {
       action: (options) => {
         const scriptValue = options[inputKey]
         execSync(`npm set-script "${scriptName}" "${scriptValue}"`)
+      },
+    }
+  },
+  execShellScript(shellScript: string): GinAction {
+    return {
+      description: `Execute shell script: "${shellScript}".`,
+      action: () => {
+        execSync(shellScript)
       },
     }
   },

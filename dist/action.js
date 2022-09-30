@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { parse } from 'path';
 export const Action = {
     installDeps(names, opts) {
-        let d = 'install ';
+        let d = 'Install ';
         d += (opts === null || opts === void 0 ? void 0 : opts.dev) ? 'dev ' : '';
         d += (opts === null || opts === void 0 ? void 0 : opts.global) ? 'global ' : '';
         d += names.length > 1 ? 'dependencies: ' : 'dependency: ';
@@ -59,6 +59,14 @@ export const Action = {
             action: (options) => {
                 const scriptValue = options[inputKey];
                 execSync(`npm set-script "${scriptName}" "${scriptValue}"`);
+            },
+        };
+    },
+    execShellScript(shellScript) {
+        return {
+            description: `Execute shell script: "${shellScript}".`,
+            action: () => {
+                execSync(shellScript);
             },
         };
     },
