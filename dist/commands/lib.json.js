@@ -8,6 +8,7 @@ export const lib = {
     actions: [
         ActionDictionary.shellScript.npmInitY,
         ...Actions.fromCommand(asdf, { subCommand: 'node18' }),
+        Action.installDeps(['typescript'], { dev: true }),
         ...Actions.fromCommand(prettier),
         ...Actions.fromCommand(skooh),
         Action.execShellScript('mkdir lib && touch lib/index.ts'),
