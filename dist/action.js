@@ -81,3 +81,9 @@ export const Actions = {
         }
     },
 };
+export const ActionDictionary = {
+    shellScript: {
+        npmInitY: Action.execShellScript('npm init -y'),
+        gitInit: Action.execShellScript('git init'),
+    },
+};

@@ -1,10 +1,10 @@
-import { Action, Actions } from '../action.js';
+import { Action, ActionDictionary, Actions } from '../action.js';
 import { refPath } from '../utils.js';
 import { react } from './react.json.js';
 const initCommand = {
     name: 'init',
     actions: [
-        Action.execShellScript('npm init -y'),
+        ActionDictionary.shellScript.npmInitY,
         Action.setScript('dev', 'next dev'),
         Action.setScript('build', 'next build'),
         Action.setScript('start', 'next start'),

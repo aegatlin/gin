@@ -4,6 +4,7 @@ import { commanderJsAdapter } from './commanderJsAdapter.js';
 import { asdf } from './commands/asdf.json.js';
 import { git } from './commands/git.json.js';
 import { github } from './commands/github.json.js';
+import { lib } from './commands/lib.json.js';
 import { next } from './commands/next.json.js';
 import { playwright } from './commands/playwright.json.js';
 import { prettier } from './commands/prettier.json.js';
@@ -16,6 +17,7 @@ const commands = [
     asdf,
     git,
     github,
+    lib,
     next,
     playwright,
     prettier,
