@@ -84,6 +84,7 @@ export const Actions = {
 export const ActionDictionary = {
     shellScript: {
         npmInitY: Action.execShellScript('npm init -y'),
+        npmPkgSetTypeModule: Action.execShellScript('npm pkg set type=module'),
         gitInit: Action.execShellScript('git init'),
     },
 };
