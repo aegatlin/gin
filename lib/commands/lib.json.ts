@@ -10,6 +10,7 @@ export const lib: GinCommand = {
   actions: [
     ActionDictionary.shellScript.npmInitY,
     ActionDictionary.shellScript.npmPkgSetTypeModule,
+    Action.execShellScript('npm pkg set main="dist/index.js"'),
     ...Actions.fromCommand(asdf, { subCommand: 'node18' }),
     Action.installDeps(['typescript'], { dev: true }),
     ...Actions.fromCommand(prettier),
