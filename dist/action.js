@@ -46,19 +46,19 @@ export const Action = {
     },
     setScript(scriptName, scriptValue) {
         return {
-            description: `Write package.json script: "${scriptName}".`,
+            description: _SubActionDictionary.setScriptDescription({ scriptName }),
             action: () => {
-                execSync(`npm set-script "${scriptName}" "${scriptValue}"`);
+                _SubActionDictionary.setScript({ scriptName, scriptValue });
             },
         };
     },
     setScriptWithInput(scriptName, { inputKey, input }) {
         return {
-            description: `Write package.json script: "${scriptName}".`,
+            description: _SubActionDictionary.setScriptDescription({ scriptName }),
             inputs: [input],
             action: (options) => {
                 const scriptValue = options[inputKey];
-                execSync(`npm set-script "${scriptName}" "${scriptValue}"`);
+                _SubActionDictionary.setScript({ scriptName, scriptValue });
             },
         };
     },
@@ -86,4 +86,8 @@ export const ActionDictionary = {
         npmInitY: Action.execShellScript('npm init -y'),
         gitInit: Action.execShellScript('git init'),
     },
+};
+const _SubActionDictionary = {
+    setScriptDescription: ({ scriptName }) => `Write package.json script: "${scriptName}".`,
+    setScript: ({ scriptName, scriptValue }) => execSync(`npm pkg set scripts."${scriptName}"="${scriptValue}"`),
 };
